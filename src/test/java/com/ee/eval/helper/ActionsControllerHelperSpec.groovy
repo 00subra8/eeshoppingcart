@@ -47,6 +47,10 @@ class ActionsControllerHelperSpec extends Specification {
         cartOrder != null
         cartOrder.vat == 0
         cartOrder.totalPrice == totalPrice
+        cartOrder.itemList != null
+        cartOrder.itemList.size() == 1
+        cartOrder.itemList.get(0).productName == cartItemName
+        cartOrder.itemList.get(0).quantity == cartItemQuantity
         cartOrder.orderTimeStamp != null
 
         where:
