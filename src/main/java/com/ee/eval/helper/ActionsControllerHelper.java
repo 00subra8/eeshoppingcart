@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,7 +36,7 @@ public class ActionsControllerHelper {
 
         cartOrder.setVat(getVat(applicationProperties.getVatPercentage(), totalPriceBeforeVat));
 
-        cartOrder.setTotalPrice(totalPriceBeforeVat);
+        cartOrder.setTotalPrice(totalPriceBeforeVat.add(cartOrder.getVat()));
 
         cartOrder.setItemList(cartItems);
 
@@ -46,7 +45,8 @@ public class ActionsControllerHelper {
 
     private BigDecimal getVat(String vatPercentage, BigDecimal totalPriceBeforeVat) {
         if (totalPriceBeforeVat != null && totalPriceBeforeVat.compareTo(BigDecimal.ZERO) > 0) {
-            return totalPriceBeforeVat.multiply(BigDecimal.valueOf(Double.valueOf(vatPercentage) / 100));
+            BigDecimal vatRawValue = totalPriceBeforeVat.multiply(BigDecimal.valueOf(Double.valueOf(vatPercentage) / 100));
+            return vatRawValue.setScale(2, BigDecimal.ROUND_HALF_UP);
         }
 
         return BigDecimal.ZERO;

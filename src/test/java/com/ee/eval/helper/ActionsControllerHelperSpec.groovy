@@ -37,7 +37,7 @@ class ActionsControllerHelperSpec extends Specification {
     @Unroll("Calculate expected totalPrice: #totalPrice for given cartItemName1: #cartItemName1 and cartItemQuantity1: #cartItemQuantity1. cartItemName2: #cartItemName2 and cartItemQuantity2: #cartItemQuantity2")
     def "Calculate expected totalPrice: #totalPrice for given cartItemName1: #cartItemName1 and cartItemQuantity1: #cartItemQuantity1"(
             BigDecimal totalPrice, String cartItemName1, int cartItemQuantity1, double price1,
-            String cartItemName2, int cartItemQuantity2, double price2) {
+            String cartItemName2, int cartItemQuantity2, double price2, double vat) {
         given:
         CartItem cartItem1 = new CartItem()
         cartItem1.productName = cartItemName1
@@ -53,14 +53,14 @@ class ActionsControllerHelperSpec extends Specification {
 
         unit.eescDao.getPrice(cartItem1.getProductName()) >> price1
         unit.eescDao.getPrice(cartItem2.getProductName()) >> price2
-        unit.applicationProperties.getVatPercentage() >> 0
+        unit.applicationProperties.getVatPercentage() >> 12.5
 
         when:
         CartOrder cartOrder = unit.buildCartOrder(cartItems)
 
         then:
         cartOrder != null
-        cartOrder.vat == 0
+        cartOrder.vat.doubleValue() == vat
         cartOrder.totalPrice == totalPrice
         cartOrder.itemList != null
         cartOrder.itemList.size() == 2
@@ -71,12 +71,11 @@ class ActionsControllerHelperSpec extends Specification {
         cartOrder.orderTimeStamp != null
 
         where:
-        totalPrice | cartItemName1 | cartItemQuantity1 | price1 | cartItemName2 | cartItemQuantity2 | price2
-        319.92     | 'Dove Soap'   | 5                 | 39.99  | 'Dove Soap'   | 3                 | 39.99
-        399.90     | 'Dove Soap'   | 10                | 39.99  | 'Dove Soap'   | 0                 | 39.99
-        624.00     | 'Dove Soap'   | 10                | 39.00  | 'Dove Soap'   | 6                 | 39.00
-
+        totalPrice | cartItemName1 | cartItemQuantity1 | price1 | cartItemName2 | cartItemQuantity2 | price2 | vat
+        314.96     | 'Dove Soap'   | 2                 | 39.99  | 'Axe Deo'     | 2                 | 99.99  | 35.00
+        359.91     | 'Dove Soap'   | 5                 | 39.99  | 'Dove Soap'   | 3                 | 39.99  | 39.99
+        449.89     | 'Dove Soap'   | 10                | 39.99  | 'Dove Soap'   | 0                 | 39.99  | 49.99
+        702.00     | 'Dove Soap'   | 10                | 39.00  | 'Dove Soap'   | 6                 | 39.00  | 78.00
     }
-
 
 }

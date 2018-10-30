@@ -78,7 +78,7 @@ class ActionsControllerSpec extends Specification {
         thrown(EESCInputException)
     }
 
-    def "Add multiple Valid CartItems into cart order"() {
+    def "Add multiple Valid CartItems into cart order of same type"() {
         given:
         CartItem cartItem1 = new CartItem()
         cartItem1.productName = "Dove Soap"
@@ -87,6 +87,31 @@ class ActionsControllerSpec extends Specification {
         CartItem cartItem2 = new CartItem()
         cartItem2.productName = "Dove Soap"
         cartItem2.quantity = 3
+
+        List<CartItem> cartItems = new ArrayList<>()
+        cartItems.add(cartItem1)
+        cartItems.add(cartItem2)
+
+        unit.inputValidatorService.isProductPresentAndAvailable(cartItem1) >> true
+        unit.inputValidatorService.isProductPresentAndAvailable(cartItem2) >> true
+        CartOrder mockCartOrder = Mock(CartOrder)
+        unit.actionsControllerHelper.buildCartOrder(cartItems) >> mockCartOrder
+        def receipt = "receipt"
+        unit.generateOrderReceiptService.getReceipt(mockCartOrder) >> receipt
+
+        expect:
+        unit.addCartItems(cartItems) == receipt
+    }
+
+    def "Add multiple Valid CartItems into cart order of different type"() {
+        given:
+        CartItem cartItem1 = new CartItem()
+        cartItem1.productName = "Dove Soap"
+        cartItem1.quantity = 2
+
+        CartItem cartItem2 = new CartItem()
+        cartItem2.productName = "Axe deo"
+        cartItem2.quantity = 2
 
         List<CartItem> cartItems = new ArrayList<>()
         cartItems.add(cartItem1)
