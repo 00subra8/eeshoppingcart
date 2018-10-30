@@ -5,19 +5,24 @@ import com.ee.eval.exception.EESCInputException;
 import com.ee.eval.model.CartItem;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
 
 public class InputValidatorService {
+    private Logger logger = LoggerFactory.getLogger(InputValidatorService.class);
 
     @Autowired
     private EESCDao eescDao;
 
     public boolean isProductPresentAndAvailable(CartItem cartItem) {
         if (cartItem == null) {
-            throw new EESCInputException("No Cart item received to check availability");
+            String errorMessage = "No Cart item received to check availability";
+            logger.error(errorMessage);
+            throw new EESCInputException(errorMessage);
         }
         List<String> allAvailableProducts = eescDao.getAllAvailableProducts();
 

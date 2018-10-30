@@ -26,7 +26,7 @@ public class GenerateOrderReceiptService {
     private EESCDao eescDao;
 
     public String getReceipt(CartOrder cartOrder) {
-        if (cartOrder == null) {
+        if (cartOrder == null || isCartOrderEmpty(cartOrder)) {
             throw new EESCInputException("Error while trying to generate receipt. No Order details found");
         }
         receiptBuilder.clear();
@@ -56,6 +56,14 @@ public class GenerateOrderReceiptService {
                 .addEntry(String.format("\t\t\t %s", applicationProperties.getBottomLine()))
                 .addEntry(getNewLine())
                 .build();
+    }
+
+    private boolean isCartOrderEmpty(CartOrder cartOrder) {
+        if (cartOrder == null) {
+            return true;
+        }
+
+        return CollectionUtils.isEmpty(cartOrder.getItemList());
     }
 
     private void populateItemList(CartOrder cartOrder) {

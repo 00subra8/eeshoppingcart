@@ -2,12 +2,9 @@ package com.ee.eval.helper;
 
 import com.ee.eval.configuration.ApplicationProperties;
 import com.ee.eval.dao.EESCDao;
-import com.ee.eval.exception.EESCInputException;
 import com.ee.eval.model.CartItem;
 import com.ee.eval.model.CartOrder;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -19,7 +16,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ActionsControllerHelper {
-    private Logger logger = LoggerFactory.getLogger(ActionsControllerHelper.class);
 
     @Autowired
     private EESCDao eescDao;
@@ -30,6 +26,11 @@ public class ActionsControllerHelper {
 
     public CartOrder buildCartOrder(CartItem cartItem) {
         CartOrder cartOrder = new CartOrder();
+
+        if (cartItem == null) {
+            return cartOrder;
+        }
+
         cartOrder.setOrderTimeStamp(Timestamp.valueOf(LocalDateTime.now()));
 
         List<CartItem> cartItems = new ArrayList<>();
@@ -72,8 +73,5 @@ public class ActionsControllerHelper {
         calculatedTotalPrice.updateAndGet(v -> v + effectivePrice);
     }
 
-    public void logAndThrowEESCInputException(String inputExceptionMessage) {
-        logger.error(inputExceptionMessage);
-        throw new EESCInputException(inputExceptionMessage);
-    }
+
 }

@@ -15,7 +15,6 @@ public class EESCDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
     public List<String> getAllAvailableProducts() {
         try {
             return jdbcTemplate.queryForList("SELECT NAME FROM PRODUCT", String.class);
