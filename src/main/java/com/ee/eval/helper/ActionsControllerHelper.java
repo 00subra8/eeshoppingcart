@@ -24,17 +24,14 @@ public class ActionsControllerHelper {
     private ApplicationProperties applicationProperties;
 
 
-    public CartOrder buildCartOrder(CartItem cartItem) {
+    public CartOrder buildCartOrder(List<CartItem> cartItems) {
         CartOrder cartOrder = new CartOrder();
 
-        if (cartItem == null) {
+        if (CollectionUtils.isEmpty(cartItems)) {
             return cartOrder;
         }
 
         cartOrder.setOrderTimeStamp(Timestamp.valueOf(LocalDateTime.now()));
-
-        List<CartItem> cartItems = new ArrayList<>();
-        cartItems.add(cartItem);
 
         BigDecimal totalPriceBeforeVat = getTotalPrice(cartItems);
 
